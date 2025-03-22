@@ -242,7 +242,7 @@ BASEPLATE_LIP_MAX = [BASEPLATE_LIP[3].x, BASEPLATE_LIP_HEIGHT];
 // Baseplate bottom part height (part added with weigthed=true)
 bp_h_bot = 6.4;
 // Baseplate bottom cutout rectangle size
-bp_cut_size = [20, 23.5];
+bp_cut_size = [20, 24];
 // bp_cut_size = 21.4;
 // Baseplate bottom cutout rectangle depth
 bp_cut_depth = 4;
