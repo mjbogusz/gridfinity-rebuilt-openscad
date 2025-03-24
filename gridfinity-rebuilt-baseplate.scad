@@ -62,8 +62,10 @@ enable_magnet = true;
 crush_ribs = true;
 // Magnet holes will have a chamfer to ease insertion.
 chamfer_holes = true;
+// Add a pinhole below magnet to force 100% infill.
+magnet_pinhole = true;
 
-hole_options = bundle_hole_options(refined_hole=false, magnet_hole=enable_magnet, screw_hole=false, crush_ribs=crush_ribs, chamfer=chamfer_holes, supportless=false);
+hole_options = bundle_hole_options(refined_hole=false, magnet_hole=enable_magnet, screw_hole=false, crush_ribs=crush_ribs, chamfer=chamfer_holes, pinhole=magnet_pinhole, supportless=true);
 
 // ===== IMPLEMENTATION ===== //
 

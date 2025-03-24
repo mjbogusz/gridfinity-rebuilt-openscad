@@ -234,21 +234,22 @@ module screw_hole(radius, height, supportless=false, chamfer_radius=0, chamfer_a
  * @param chamfer Add a chamfer to the magnet/screw hole.
  * @param supportless If the magnet/screw hole should be printed in such a way that the screw hole does not require supports.
  */
-function bundle_hole_options(refined_hole=false, magnet_hole=false, screw_hole=false, crush_ribs=false, chamfer=false, supportless=false) =
+function bundle_hole_options(refined_hole=false, magnet_hole=false, screw_hole=false, crush_ribs=false, chamfer=false, pinhole=false, supportless=false) =
     assert(
         is_bool(refined_hole) &&
         is_bool(magnet_hole) &&
         is_bool(screw_hole) &&
         is_bool(crush_ribs) &&
         is_bool(chamfer) &&
+        is_bool(pinhole) &&
         is_bool(supportless))
-    [refined_hole, magnet_hole, screw_hole, crush_ribs, chamfer, supportless];
+    [refined_hole, magnet_hole, screw_hole, crush_ribs, chamfer, pinhole, supportless];
 
 /**
  * @summary Ensures that hole options are valid, and can be used.
  */
 module assert_hole_options_valid(hole_options) {
-    assert(is_list(hole_options) && len(hole_options) == 6);
+    assert(is_list(hole_options) && len(hole_options) == 7);
     for(option=hole_options){
         assert(is_bool(option), "One or more hole options is not a boolean value!");
     }
@@ -275,7 +276,8 @@ module block_base_hole(hole_options, o=0) {
     screw_hole = hole_options[2];
     crush_ribs = hole_options[3];
     chamfer = hole_options[4];
-    supportless = hole_options[5];
+    pinhole = hole_options[5];
+    supportless = hole_options[6];
 
     screw_radius = SCREW_HOLE_RADIUS - (o/2);
     magnet_radius = MAGNET_HOLE_RADIUS - (o/2);
@@ -293,25 +295,31 @@ module block_base_hole(hole_options, o=0) {
 
         if(magnet_hole) {
             difference() {
-                if(crush_ribs) {
+                if (crush_ribs) {
                     ribbed_cylinder(magnet_radius, magnet_inner_radius, magnet_depth, MAGNET_HOLE_CRUSH_RIB_COUNT);
                 } else {
                     cylinder(h = magnet_depth, r=magnet_radius);
                 }
 
-                if(supportless) {
+                if (supportless) {
                     make_hole_printable(
                     screw_hole ? screw_radius : 1, magnet_radius, magnet_depth, supportless_additional_layers);
                 }
             }
 
             if(chamfer) {
-                 cone(magnet_radius + CHAMFER_ADDITIONAL_RADIUS, CHAMFER_ANGLE, MAGNET_HOLE_DEPTH - o);
+                cone(magnet_radius + CHAMFER_ADDITIONAL_RADIUS, CHAMFER_ANGLE, MAGNET_HOLE_DEPTH - o);
+            }
+
+            if (pinhole) {
+                cylinder(h = 100, r = 0.1, center=true);
             }
         }
         if(screw_hole) {
-            screw_hole(screw_radius, screw_depth, supportless,
-                chamfer ? CHAMFER_ADDITIONAL_RADIUS : 0, CHAMFER_ANGLE);
+            difference() {
+                screw_hole(screw_radius, screw_depth, supportless,
+                    chamfer ? CHAMFER_ADDITIONAL_RADIUS : 0, CHAMFER_ANGLE);
+            }
         }
     }
 }
